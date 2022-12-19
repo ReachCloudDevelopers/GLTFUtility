@@ -131,15 +131,15 @@ namespace Siccity.GLTFUtility {
 			stream.Close();
 
 			// Return json
-			return json.Trim().Replace("\uFFFD", string.Empty);
+			return json.Trim().Substring(0, json.LastIndexOf("}") + 1);
 		}
 #endregion
 
 		private static GameObject ImportGLTF(string filepath, ImportSettings importSettings, out AnimationClip[] animations) {
-			string json = File.ReadAllText(filepath).Trim().Replace("\uFFFD", string.Empty);
+			string json = File.ReadAllText(filepath).Trim();
 
 			// Parse json
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json);
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json.Substring(0, json.LastIndexOf("}") + 1));
 			return gltfObject.LoadInternal(filepath, null, 0, importSettings, out animations);
 		}
 
@@ -147,7 +147,7 @@ namespace Siccity.GLTFUtility {
 			string json = File.ReadAllText(filepath);
 
 			// Parse json
-			LoadAsync(json.Trim().Replace("\uFFFD", string.Empty), filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
+			LoadAsync(json.Trim().Substring(0, json.LastIndexOf("}") + 1), filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
 		}
 
 		public abstract class ImportTask<TReturn> : ImportTask {
