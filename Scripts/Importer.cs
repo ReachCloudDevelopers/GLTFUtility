@@ -64,11 +64,7 @@ namespace Siccity.GLTFUtility {
 		}
 		
 		private static string CleanupJson(string json) {
-			json = Regex.Replace(json, @"[^\u0020-\u007E]", string.Empty);
-			json = json.Replace("\uFFFD", string.Empty);
-			var startIndex = json.IndexOf('{');
-			var count = json.LastIndexOf('}') - startIndex;
-			json = json.Substring(startIndex, count);
+			json = Regex.Match(json, "{([^}].*)}").Value;
 			return json;
 		}
 
