@@ -131,23 +131,34 @@ namespace Siccity.GLTFUtility {
 			stream.Close();
 
 			// Return json
-			return json.Substring(json.IndexOf('{'), (json.LastIndexOf('}') + 1) - json.IndexOf('{'));
+			var startIndex = json.IndexOf('{');
+			var count = json.LastIndexOf('}') - startIndex;
+			json = json.Substring(startIndex, count);
+			return json;
 		}
 #endregion
 
 		private static GameObject ImportGLTF(string filepath, ImportSettings importSettings, out AnimationClip[] animations) {
-			string json = File.ReadAllText(filepath).Trim();
+			string json = File.ReadAllText(filepath);
+	
+			var startIndex = json.IndexOf('{');
+			var count = json.LastIndexOf('}') - startIndex;
+			json = json.Substring(startIndex, count);
 
 			// Parse json
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json.Substring(json.IndexOf('{'), (json.LastIndexOf('}') + 1) - json.IndexOf('{')));
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json);
 			return gltfObject.LoadInternal(filepath, null, 0, importSettings, out animations);
 		}
 
 		public static void ImportGLTFAsync(string filepath, ImportSettings importSettings, Action<GameObject, AnimationClip[]> onFinished, Action<float> onProgress = null) {
 			string json = File.ReadAllText(filepath);
-
+			
+			var startIndex = json.IndexOf('{');
+			var count = json.LastIndexOf('}') - startIndex;
+			json = json.Substring(startIndex, count);
+			
 			// Parse json
-			LoadAsync(json.Substring(json.IndexOf('{'), (json.LastIndexOf('}') + 1) - json.IndexOf('{')), filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
+			LoadAsync(json, filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
 		}
 
 		public abstract class ImportTask<TReturn> : ImportTask {
