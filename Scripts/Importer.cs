@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Text.RegularExpressions;
 
 namespace Siccity.GLTFUtility {
 	/// <summary> API used for importing .gltf and .glb files </summary>
@@ -60,6 +61,14 @@ namespace Siccity.GLTFUtility {
 				Debug.Log("Extension '" + extension + "' not recognized in " + filepath);
 				onFinished(null, null);
 			}
+		}
+		
+		private static string CleanupJson(string json) {
+			json = Regex.Replace(json, @"[^\u0020-\u007E]", string.Empty);
+			var startIndex = json.IndexOf('{');
+			var count = json.LastIndexOf('}') - startIndex;
+			json = json.Substring(startIndex, count);
+			return json;
 		}
 
 #region GLB
@@ -131,34 +140,22 @@ namespace Siccity.GLTFUtility {
 			stream.Close();
 
 			// Return json
-			var startIndex = json.IndexOf('{');
-			var count = json.LastIndexOf('}') - startIndex;
-			json = json.Substring(startIndex, count);
-			return json;
+			return CleanupJson(json);
 		}
 #endregion
 
 		private static GameObject ImportGLTF(string filepath, ImportSettings importSettings, out AnimationClip[] animations) {
 			string json = File.ReadAllText(filepath);
-	
-			var startIndex = json.IndexOf('{');
-			var count = json.LastIndexOf('}') - startIndex;
-			json = json.Substring(startIndex, count);
 
 			// Parse json
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json);
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(CleanupJson(json));
 			return gltfObject.LoadInternal(filepath, null, 0, importSettings, out animations);
 		}
 
 		public static void ImportGLTFAsync(string filepath, ImportSettings importSettings, Action<GameObject, AnimationClip[]> onFinished, Action<float> onProgress = null) {
 			string json = File.ReadAllText(filepath);
-			
-			var startIndex = json.IndexOf('{');
-			var count = json.LastIndexOf('}') - startIndex;
-			json = json.Substring(startIndex, count);
-			
 			// Parse json
-			LoadAsync(json, filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
+			LoadAsync(CleanupJson(json), filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
 		}
 
 		public abstract class ImportTask<TReturn> : ImportTask {
