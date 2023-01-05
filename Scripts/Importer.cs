@@ -131,7 +131,7 @@ namespace Siccity.GLTFUtility {
 			stream.Close();
 
 			// Return json
-			return json.Substring(json.IndexOf('{'), json.LastIndexOf('}') + 1);
+			return json.Substring(json.IndexOf('{'), (json.LastIndexOf('}') + 1) - json.IndexOf('{'));
 		}
 #endregion
 
@@ -139,7 +139,7 @@ namespace Siccity.GLTFUtility {
 			string json = File.ReadAllText(filepath).Trim();
 
 			// Parse json
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json.Substring(json.IndexOf('{'), json.LastIndexOf('}') + 1));
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json.Substring(json.IndexOf('{'), (json.LastIndexOf('}') + 1) - json.IndexOf('{')));
 			return gltfObject.LoadInternal(filepath, null, 0, importSettings, out animations);
 		}
 
@@ -147,7 +147,7 @@ namespace Siccity.GLTFUtility {
 			string json = File.ReadAllText(filepath);
 
 			// Parse json
-			LoadAsync(json.Substring(json.IndexOf('{'), json.LastIndexOf('}') + 1), filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
+			LoadAsync(json.Substring(json.IndexOf('{'), (json.LastIndexOf('}') + 1) - json.IndexOf('{')), filepath, null, 0, importSettings, onFinished, onProgress).RunCoroutine();
 		}
 
 		public abstract class ImportTask<TReturn> : ImportTask {
