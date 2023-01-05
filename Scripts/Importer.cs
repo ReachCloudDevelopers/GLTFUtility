@@ -73,7 +73,7 @@ namespace Siccity.GLTFUtility {
 			FileStream stream = File.OpenRead(filepath);
 			long binChunkStart;
 			string json = GetGLBJson(stream, out binChunkStart);
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json);
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json, new JsonSerializerSettings() { CheckAdditionalContent = false });
 			return gltfObject.LoadInternal(filepath, null, binChunkStart, importSettings, out animations);
 		}
 
@@ -81,7 +81,7 @@ namespace Siccity.GLTFUtility {
 			Stream stream = new MemoryStream(bytes);
 			long binChunkStart;
 			string json = GetGLBJson(stream, out binChunkStart);
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json);
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(json, new JsonSerializerSettings() { CheckAdditionalContent = false });
 			return gltfObject.LoadInternal(null, bytes, binChunkStart, importSettings, out animations);
 		}
 
@@ -145,7 +145,7 @@ namespace Siccity.GLTFUtility {
 			string json = File.ReadAllText(filepath);
 
 			// Parse json
-			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(CleanupJson(json));
+			GLTFObject gltfObject = JsonConvert.DeserializeObject<GLTFObject>(CleanupJson(json), new JsonSerializerSettings() { CheckAdditionalContent = false });
 			return gltfObject.LoadInternal(filepath, null, 0, importSettings, out animations);
 		}
 
@@ -288,7 +288,7 @@ namespace Siccity.GLTFUtility {
 #region Async
 		private static IEnumerator LoadAsync(string json, string filepath, byte[] bytefile, long binChunkStart, ImportSettings importSettings, Action<GameObject, AnimationClip[]> onFinished, Action<float> onProgress = null) {
 			// Threaded deserialization
-			Task<GLTFObject> deserializeTask = new Task<GLTFObject>(() => JsonConvert.DeserializeObject<GLTFObject>(json));
+			Task<GLTFObject> deserializeTask = new Task<GLTFObject>(() => JsonConvert.DeserializeObject<GLTFObject>(json, new JsonSerializerSettings() { CheckAdditionalContent = false }));
 			deserializeTask.Start();
 			while (!deserializeTask.IsCompleted) yield return null;
 			GLTFObject gltfObject = deserializeTask.Result;
