@@ -64,6 +64,10 @@ namespace Siccity.GLTFUtility {
 		}
 		
 		private static string CleanupJson(string json) {
+			if (!UnityEngine.Application.isEditor) 
+			{
+				return json;
+			}
 			json = Regex.Match(json, @"((\[[^\}]{3,})?\{s*[^\}\{]{3,}?:.*\}([^\{]+\])?)").Value;
 			return json;
 		}
