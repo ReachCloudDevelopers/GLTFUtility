@@ -64,7 +64,7 @@ namespace Siccity.GLTFUtility {
 		}
 		
 		private static string CleanupJson(string json) {
-			if (!UnityEngine.Application.isEditor) 
+			if (UnityEngine.Application.isEditor) 
 			{
 				return json;
 			}
